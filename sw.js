@@ -1,9 +1,10 @@
 // 오프라인 실행용 서비스 워커
 // 문제나 화면을 수정해 다시 배포할 때는 아래 VERSION 숫자를 올려야 태블릿에 새 버전이 반영됩니다.
-const VERSION = 'oxquiz-v1';
+const VERSION = 'oxquiz-v2';
 const FILES = [
   './', './index.html', './app.js', './config.js', './questions.js', './manifest.json',
   './assets/lab.png', './assets/gist.png', './icons/icon-192.png', './icons/icon-512.png',
+  './fonts/Jua-Regular.ttf',
 ];
 
 self.addEventListener('install', (e) => {

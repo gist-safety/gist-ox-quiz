@@ -273,9 +273,14 @@
     const rows = [['일시', '학(사)번', '언어', '점수', '정답수', '문항수'],
       ...loadRecords().map(r => [fmt(r.time), r.id, r.lang === 'en' ? 'English' : '한국어', r.score, r.correct, r.total])];
     const csv = '﻿' + rows.map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\r\n');
+    const name = `OX퀴즈_기록_${fmt(new Date().toISOString()).slice(0, 10)}.csv`;
+    if (window.AndroidApp) {  // APK: 태블릿의 '다운로드' 폴더에 저장
+      alert(window.AndroidApp.saveCsv(csv, name));
+      return;
+    }
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-    a.download = `OX퀴즈_기록_${fmt(new Date().toISOString()).slice(0, 10)}.csv`;
+    a.download = name;
     a.click();
   });
   $('#btn-clear').addEventListener('click', () => {
@@ -292,6 +297,14 @@
   addEventListener('touchmove', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 
   applyLang();
+
+  // APK에서 뒤로 가기 버튼 → 팝업 닫기 / 처음 화면 (앱이 꺼지지 않도록)
+  window.quizBack = () => {
+    if ($('#ov-answer').classList.contains('show')) return;  // 해설은 '다음 문제'로만 넘김
+    const open = [...document.querySelectorAll('.overlay.show')];
+    if (open.length) { open.forEach(o => o.classList.remove('show')); return; }
+    if (current !== 'home') goHome();
+  };
 
   // 오프라인 실행을 위한 서비스 워커 (https 또는 localhost에서만 동작)
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
