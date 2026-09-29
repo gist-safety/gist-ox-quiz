@@ -1,5 +1,5 @@
 # 엑셀 → questions.js 변환
-#  - 문제: ..\퀴즈 엑셀 파일\OX문제 선별.xlsx 의 'Sheet1' (번호 칸에 쉬움/어려움)
+#  - 문제: ..\퀴즈 엑셀 파일\OX문제 선별.xlsx 의 'Sheet1' (번호 칸에 기본/응용/도전)
 #  - 영문: ..\퀴즈 엑셀 파일\OX퀴즈_영문번역.xlsx (한글 문제 문장으로 연결)
 # 사용법: 문제변환.bat 실행
 import json, os
@@ -20,12 +20,14 @@ if os.path.exists(EN_XLSX):
             en[s(r[1])] = {'category': s(r[3]), 'question': s(r[4]), 'explanation': s(r[5])}
 
 ws = openpyxl.load_workbook(KO_XLSX, data_only=True)['Sheet1']
-quiz = {'easy': [], 'hard': []}
+# 단계 이름 → 앱 내부 이름 (예전 쉬움/어려움도 인식)
+LEVELS = {'기본': 'basic', '응용': 'applied', '도전': 'challenge', '쉬움': 'basic', '어려움': 'challenge'}
+quiz = {'basic': [], 'applied': [], 'challenge': []}
 missing = []
 for r in ws.iter_rows(min_row=2, values_only=True):
     if not r or not r[2] or s(r[3]).upper() not in ('O', 'X'):
         continue
-    level = 'easy' if s(r[0]) == '쉬움' else 'hard' if s(r[0]) == '어려움' else None
+    level = LEVELS.get(s(r[0]))
     if not level:
         continue
     q = s(r[2])
@@ -43,7 +45,7 @@ with open(os.path.join(HERE, 'questions.js'), 'w', encoding='utf-8') as f:
     f.write('// 자동 생성 파일입니다. 문제를 바꾸려면 엑셀을 고친 뒤 문제변환.bat 을 실행하세요.\n')
     f.write('window.QUIZ = ' + json.dumps(quiz, ensure_ascii=False, indent=1) + ';\n')
 
-print(f"완료: 쉬움 {len(quiz['easy'])}문항, 어려움 {len(quiz['hard'])}문항 → questions.js")
+print(f"완료: 기본 {len(quiz['basic'])}문항, 응용 {len(quiz['applied'])}문항, 도전 {len(quiz['challenge'])}문항 → questions.js")
 if missing:
     print(f'※ 영문 번역이 없는 문항 {len(missing)}개 (영어 모드에서 한글로 표시됨):')
     for q in missing:

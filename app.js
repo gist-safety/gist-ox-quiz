@@ -1,6 +1,6 @@
 (() => {
   const CFG = Object.assign({
-    EASY_COUNT: 1, HARD_COUNT: 1, ASK_ID: true,
+    BASIC_COUNT: 1, APPLIED_COUNT: 1, CHALLENGE_COUNT: 1, PRIZES: {}, ASK_ID: true,
     ID_MIN_LENGTH: 4, ID_MAX_LENGTH: 10, IDLE_SECONDS: 90, RESULT_SECONDS: 30, SOUND: true,
     BGM: true, BGM_VOLUME: 0.35,
   }, window.QUIZ_CONFIG || {});
@@ -15,17 +15,21 @@
       idLabel: '학(사)번 :', start: '시 작', retry: '다시 입력',
       idEmpty: '학(사)번을 입력해 주세요.', idWrong: '입력된 사(학)번 정보가 잘못되었습니다.',
       count: (n, t) => `문제 <b>${n}</b> / ${t}`,
-      level: { easy: '쉬움', hard: '어려움' },
+      level: { basic: '기본', applied: '응용', challenge: '도전' },
       correct: '정답입니다!', wrong: '오답입니다!',
       answerIs: (a) => `정답은 ${a} 입니다`,
       explain: '해설', next: '다음 문제', seeResult: '결과 보기',
-      resultTitle: '퀴즈 <span class="hl">결과</span>',
-      score: (s) => `${s}점`,
-      sub: (t, ok) => `${t}문제 중 ${ok}문제를 맞혔어요!`,
-      msgHigh: '훌륭해요! 연구실 안전 수칙을 잘 알고 있어요.',
-      msgMid: '좋아요! 헷갈린 문제는 해설을 다시 확인해 보세요.',
-      msgLow: '안전 수칙을 한 번 더 확인해 주세요.',
-      review: '틀린 문제 보기', reviewTitle: '틀린 문제 다시 보기', home: '처음으로', close: '닫기',
+      rTitle: (ok) => ok ? `${ok}문제 정답!` : '아쉬워요!',
+      rMsg: (ok, t) => ok === t ? '완벽해요! 연구실 안전 전문가시네요!'
+        : ok >= 2 ? '훌륭해요! 연구실 안전 의식이 뛰어나세요!'
+        : ok === 1 ? '좋아요! 조금만 더 알면 1등도 가능해요!'
+        : '해설을 참고해서 다시 도전해 보세요!',
+      rOf: (t) => `/ ${t} 문제 정답`,
+      prizeName: (p) => `${p.medal} ${p.rank} · ${p.ko}`,
+      prizeGuide: (p) => `안전팀 부스 담당자에게 이 화면을 보여주고 <b>${p.koObj}</b> 받아가세요!`,
+      noPrize: '1문제 이상 맞히면 상품을 받을 수 있어요.<br>다시 도전해 보세요!',
+      retryAll: '다시 도전하기',
+      reviewTitle: '틀린 문제 다시 보기', home: '처음으로', close: '닫기',
       mine: (p, a) => `내 답: ${p} → 정답: ${a}`,
       countdown: (s) => `${s}초 후 처음 화면으로 돌아갑니다`,
     },
@@ -34,17 +38,21 @@
       idLabel: 'ID Number :', start: 'START', retry: 'Try Again',
       idEmpty: 'Please enter your ID number.', idWrong: 'The ID number you entered is not valid.',
       count: (n, t) => `Question <b>${n}</b> / ${t}`,
-      level: { easy: 'Easy', hard: 'Hard' },
+      level: { basic: 'Basic', applied: 'Applied', challenge: 'Challenge' },
       correct: 'Correct!', wrong: 'Wrong!',
       answerIs: (a) => `The answer is ${a}`,
       explain: 'Explanation', next: 'Next', seeResult: 'See Result',
-      resultTitle: 'Quiz <span class="hl">Result</span>',
-      score: (s) => `${s} pts`,
-      sub: (t, ok) => `You got ${ok} out of ${t} correct!`,
-      msgHigh: 'Excellent! You know your lab safety rules well.',
-      msgMid: 'Good job! Review the explanation for anything you missed.',
-      msgLow: 'Please review the lab safety rules once more.',
-      review: 'Review Mistakes', reviewTitle: 'Review Your Mistakes', home: 'Home', close: 'Close',
+      rTitle: (ok) => ok ? `${ok} Correct!` : 'So Close!',
+      rMsg: (ok, t) => ok === t ? 'Perfect! You are a lab safety expert!'
+        : ok >= 2 ? 'Great job! Your lab safety awareness is excellent!'
+        : ok === 1 ? 'Nice! A little more and you could win 1st prize!'
+        : 'Check the explanations and try again!',
+      rOf: (t) => `/ ${t} correct`,
+      prizeName: (p) => `${p.medal} ${p.en}`,
+      prizeGuide: (p) => `Show this screen to the Safety Team booth staff to receive your <b>${p.en}</b>!`,
+      noPrize: 'Answer at least 1 question correctly to win a prize.<br>Please try again!',
+      retryAll: 'Try Again',
+      reviewTitle: 'Review Your Mistakes', home: 'Home', close: 'Close',
       mine: (p, a) => `Your answer: ${p} → Correct: ${a}`,
       countdown: (s) => `Returning to the start screen in ${s} seconds`,
     },
@@ -241,10 +249,11 @@
     return a;
   }
   function startQuiz() {
-    const Q = window.QUIZ || { easy: [], hard: [] };
+    const Q = window.QUIZ || {};
     questions = [
-      ...shuffle(Q.easy).slice(0, CFG.EASY_COUNT).map(q => ({ ...q, level: 'easy' })),
-      ...shuffle(Q.hard).slice(0, CFG.HARD_COUNT).map(q => ({ ...q, level: 'hard' })),
+      ...shuffle(Q.basic || []).slice(0, CFG.BASIC_COUNT).map(q => ({ ...q, level: 'basic' })),
+      ...shuffle(Q.applied || []).slice(0, CFG.APPLIED_COUNT).map(q => ({ ...q, level: 'applied' })),
+      ...shuffle(Q.challenge || []).slice(0, CFG.CHALLENGE_COUNT).map(q => ({ ...q, level: 'challenge' })),
     ];
     idx = 0; results = [];
     show('quiz'); renderQuestion();
@@ -295,33 +304,41 @@
   function finish() {
     const total = questions.length, ok = results.filter(r => r.correct).length;
     const score = Math.round(ok / total * 100);
-    saveRecord({ time: new Date().toISOString(), id: studentId, lang, score, correct: ok, total });
+    const prize = CFG.PRIZES[ok];
+    saveRecord({ time: new Date().toISOString(), id: studentId, lang, score, correct: ok, total, prize: prize ? prize.rank : '' });
     show('result');
-    $('#r-score').textContent = t().score(score);
-    $('#r-sub').textContent = t().sub(total, ok);
-    $('#r-msg').textContent = score >= 80 ? t().msgHigh : score >= 50 ? t().msgMid : t().msgLow;
-    $('#btn-review').style.display = ok < total ? '' : 'none';
+    $('#r-gift').textContent = ok ? '🎁' : '💪';
+    $('#r-title').textContent = t().rTitle(ok);
+    $('#r-msg').textContent = t().rMsg(ok, total);
+    $('#r-num').textContent = ok;
+    $('#r-of').textContent = t().rOf(total);
+    $('#r-dots').innerHTML = results.map(r => `<i class="${r.correct ? 'ok' : 'ng'}"></i>`).join('');
+    $('#r-prize').classList.toggle('none', !prize);
+    if (prize) {
+      $('#r-prize-img').src = prize.img;
+      $('#r-prize-name').textContent = t().prizeName(prize);
+      $('#r-prize-guide').innerHTML = t().prizeGuide(prize);
+    } else {
+      $('#r-prize-name').textContent = '';
+      $('#r-prize-guide').innerHTML = t().noPrize;
+    }
     let left = CFG.RESULT_SECONDS;
     const tick = () => { $('#r-countdown').textContent = t().countdown(left); };
     tick();
-    resultTimer = setInterval(() => {
-      if ($('#ov-review').classList.contains('show')) { left = CFG.RESULT_SECONDS; tick(); return; }
-      if (--left <= 0) goHome(); else tick();
-    }, 1000);
+    resultTimer = setInterval(() => { if (--left <= 0) goHome(); else tick(); }, 1000);
   }
   function esc(s) {
     return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   }
-  $('#btn-review').addEventListener('click', () => {
-    sndTap();
-    $('#review-list').innerHTML = results.filter(r => !r.correct).map(r => `
-      <div class="review-item">
-        <div class="rq">${esc(text(r.q).question)}</div>
-        <div class="ra">${t().mine(r.pick, r.q.answer)}</div>
-        <div class="re">${esc(text(r.q).explanation || '')}</div>
-      </div>`).join('');
-    openOv('#ov-review');
-  });
+
+  // ----- 처음 화면: 상품 안내 -----
+  (function renderHomePrizes() {
+    $('#home-prizes').innerHTML = Object.keys(CFG.PRIZES).sort((a, b) => b - a).map(n => {
+      const p = CFG.PRIZES[n];
+      return `<div class="prize-item"><img src="${esc(p.img)}" alt="">
+        <div class="rk">${p.medal} ${esc(p.rank)} (${n}문제 정답)</div><div class="nm">${esc(p.ko)}</div></div>`;
+    }).join('');
+  })();
 
   // ----- 기록 (SCORE) -----
   function loadRecords() { try { return JSON.parse(localStorage.getItem(REC_KEY)) || []; } catch (e) { return []; } }
@@ -330,15 +347,17 @@
     return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; };
   function renderRecords() {
     const a = loadRecords();
-    const avg = a.length ? Math.round(a.reduce((s, r) => s + r.score, 0) / a.length) : 0;
-    $('#rec-summary').textContent = a.length ? `총 ${a.length}회 참여 · 평균 ${avg}점` : '아직 기록이 없습니다.';
+    const cnt = (rk) => a.filter(r => r.prize === rk).length;
+    $('#rec-summary').textContent = a.length
+      ? `총 ${a.length}회 참여 · 1등 ${cnt('1등')} · 2등 ${cnt('2등')} · 3등 ${cnt('3등')} · 상품 없음 ${a.filter(r => !r.prize).length}`
+      : '아직 기록이 없습니다.';
     $('#rec-body').innerHTML = a.slice().reverse().map(r =>
-      `<tr><td>${fmt(r.time)}</td><td>${esc(r.id || '-')}</td><td>${r.score}</td><td>${r.correct}/${r.total}</td></tr>`).join('');
+      `<tr><td>${fmt(r.time)}</td><td>${esc(r.id || '-')}</td><td>${esc(r.prize || '-')}</td><td>${r.correct}/${r.total}</td></tr>`).join('');
   }
   $('#btn-records').addEventListener('click', () => { sndTap(); renderRecords(); openOv('#ov-records'); });
   $('#btn-csv').addEventListener('click', () => {
-    const rows = [['일시', '학(사)번', '언어', '점수', '정답수', '문항수'],
-      ...loadRecords().map(r => [fmt(r.time), r.id, r.lang === 'en' ? 'English' : '한국어', r.score, r.correct, r.total])];
+    const rows = [['일시', '학(사)번', '언어', '상품', '정답수', '문항수'],
+      ...loadRecords().map(r => [fmt(r.time), r.id, r.lang === 'en' ? 'English' : '한국어', r.prize || '', r.correct, r.total])];
     const csv = '﻿' + rows.map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\r\n');
     const name = `OX퀴즈_기록_${fmt(new Date().toISOString()).slice(0, 10)}.csv`;
     if (window.AndroidApp) {  // APK: 태블릿의 '다운로드' 폴더에 저장
