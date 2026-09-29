@@ -96,6 +96,16 @@
   }
   .home-btn:active { transform: scale(.94); }
   .score-btn { position: absolute; right: 90px; top: 78px; width: 100px; cursor: pointer; z-index: 5; }
+  .bgm-btn {
+    position: absolute; right: 214px; top: 76px; width: 84px; height: 84px; border-radius: 50%; cursor: pointer; z-index: 5;
+    background: radial-gradient(circle at 40% 35%, #ffffc8, #ffff5a 55%, #f6f000);
+    box-shadow: 0 0 0 4px rgba(62,227,232,.7), 0 6px 12px rgba(0,0,0,.2);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .bgm-btn:active { transform: scale(.94); }
+  .bgm-btn .slash { display: none; }
+  .bgm-btn.off { filter: grayscale(1); opacity: .75; }
+  .bgm-btn.off .slash { display: inline; }
 
   /* ---------- 학번 입력 ---------- */
   .id-label { position: absolute; left: 330px; top: 318px; font-size: 76px; color: #111; }
@@ -243,6 +253,12 @@
         <line x1="60" y1="24" x2="60" y2="74"/><line x1="78" y1="24" x2="78" y2="74"/>
       </g>
     </svg>
+    <div class="bgm-btn" id="btn-bgm" aria-label="배경음악 켜기/끄기">
+      <svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="#e8201a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3" fill="#e8201a"/><circle cx="18" cy="16" r="3" fill="#e8201a"/>
+        <line class="slash" x1="3" y1="3" x2="21" y2="21" stroke="#333" stroke-width="2.8"/>
+      </svg>
+    </div>
     <div class="title" style="top:160px">연구실 <span class="hl">안전</span> 퀴즈</div>
     <div class="subtitle" style="top:340px">Quiz For Lab <span class="hl">Safety</span></div>
     <div class="pill lang" data-lang="ko" style="left:270px; top:600px; width:500px; letter-spacing:18px;">

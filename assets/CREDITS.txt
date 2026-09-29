@@ -1,0 +1,7 @@
+배경음악: "Happy Clappy Loop" by OwlishMedia
+  https://opengameart.org/content/happy-clappy-loop
+  License: CC0 1.0 (Public Domain) — 16bit 모노로 변환해 사용
+
+글꼴: Jua (Woowahan Brothers)
+  https://fonts.google.com/specimen/Jua
+  License: SIL Open Font License 1.1 (fonts/OFL.txt)

@@ -2,6 +2,7 @@
   const CFG = Object.assign({
     EASY_COUNT: 1, HARD_COUNT: 1, ASK_ID: true,
     ID_MIN_LENGTH: 4, ID_MAX_LENGTH: 10, IDLE_SECONDS: 90, RESULT_SECONDS: 30, SOUND: true,
+    BGM: true, BGM_VOLUME: 0.35,
   }, window.QUIZ_CONFIG || {});
   const REC_KEY = 'gist-ox-quiz-records';
   const $ = (s) => document.querySelector(s);
@@ -94,6 +95,69 @@
       }
     } catch (e) {}
   }
+  // ----- 배경음악 (Happy Clappy Loop by OwlishMedia, CC0) -----
+  const BGM_KEY = 'gist-ox-quiz-bgm';
+  const bgm = { buf: null, el: null, src: null, gain: null, playing: false, touched: false,
+    on: (() => { try { return localStorage.getItem(BGM_KEY) !== 'off'; } catch (e) { return true; } })() };
+  const audioCtx = () => (actx = actx || new (window.AudioContext || window.webkitAudioContext)());
+
+  (function loadBgm() {
+    if (!CFG.BGM) return;
+    // XHR: https와 안드로이드 앱(file://) 모두에서 동작. 실패하면 <audio loop>로 대체
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'assets/bgm.wav'); xhr.responseType = 'arraybuffer';
+    const fallback = () => { bgm.el = new Audio('assets/bgm.wav'); bgm.el.loop = true; if (bgm.touched) startBgm(); };
+    xhr.onload = () => {
+      if (!xhr.response || (xhr.status && xhr.status !== 200)) return fallback();
+      try {
+        audioCtx().decodeAudioData(xhr.response, (b) => { bgm.buf = b; if (bgm.touched) startBgm(); }, fallback);
+      } catch (e) { fallback(); }
+    };
+    xhr.onerror = fallback;
+    try { xhr.send(); } catch (e) { fallback(); }
+  })();
+
+  function startBgm() {
+    if (!CFG.BGM || !bgm.on || bgm.playing) return;
+    if (bgm.buf) {
+      const c = audioCtx();
+      bgm.gain = c.createGain(); bgm.gain.gain.value = CFG.BGM_VOLUME;
+      bgm.src = c.createBufferSource(); bgm.src.buffer = bgm.buf; bgm.src.loop = true;
+      bgm.src.connect(bgm.gain).connect(c.destination); bgm.src.start();
+      bgm.playing = true;
+    } else if (bgm.el) {
+      bgm.el.volume = CFG.BGM_VOLUME;
+      bgm.el.play().then(() => { bgm.playing = true; }).catch(() => {});
+    }
+  }
+  function stopBgm() {
+    try { if (bgm.src) bgm.src.stop(); } catch (e) {}
+    bgm.src = null;
+    if (bgm.el) bgm.el.pause();
+    bgm.playing = false;
+  }
+  function bgmVolume(v) {  // 해설을 읽는 동안 살짝 줄임
+    if (bgm.gain) bgm.gain.gain.setTargetAtTime(v, audioCtx().currentTime, 0.25);
+    if (bgm.el) bgm.el.volume = v;
+  }
+  function renderBgmBtn() {
+    const b = $('#btn-bgm');
+    if (!b) return;
+    b.style.display = CFG.BGM ? '' : 'none';
+    b.classList.toggle('off', !bgm.on);
+  }
+  // 브라우저 정책상 첫 터치 후에 소리를 낼 수 있음
+  addEventListener('pointerdown', () => {
+    bgm.touched = true;
+    if (actx && actx.state === 'suspended') actx.resume();
+    startBgm();
+  }, true);
+  // 앱이 뒤로 가거나 화면이 꺼지면 멈춤
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { if (actx) actx.suspend(); if (bgm.el) bgm.el.pause(); }
+    else { if (actx) actx.resume(); if (bgm.el && bgm.playing) bgm.el.play().catch(() => {}); }
+  });
+
   const sndOk = () => beep([[784, .14], [988, .14], [1319, .3]]);
   const sndNg = () => beep([[220, .22], [165, .4]], 'square');
   const sndTap = () => beep([[660, .06]]);
@@ -103,6 +167,7 @@
   function show(name) {
     document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === 'scr-' + name));
     document.querySelectorAll('.overlay').forEach(o => o.classList.remove('show'));
+    bgmVolume(CFG.BGM_VOLUME);
     stage.classList.toggle('quiz-mode', name === 'quiz' || name === 'result');
     current = name;
     clearInterval(resultTimer);
@@ -215,10 +280,12 @@
     $('#a-explain').textContent = text(q).explanation || '';
     $('#btn-next-label').textContent = idx + 1 < questions.length ? t().next : t().seeResult;
     openOv('#ov-answer');
+    bgmVolume(CFG.BGM_VOLUME * 0.4);
   }
   $('#btn-next').addEventListener('click', () => {
     sndTap();
     $('#ov-answer').classList.remove('show');
+    bgmVolume(CFG.BGM_VOLUME);
     idx++;
     if (idx < questions.length) renderQuestion(); else finish();
   });
@@ -297,6 +364,15 @@
   addEventListener('touchmove', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 
   applyLang();
+
+  // 배경음악 켜기/끄기 버튼 (처음 화면)
+  $('#btn-bgm').addEventListener('click', () => {
+    bgm.on = !bgm.on;
+    try { localStorage.setItem(BGM_KEY, bgm.on ? 'on' : 'off'); } catch (e) {}
+    if (bgm.on) startBgm(); else stopBgm();
+    renderBgmBtn();
+  });
+  renderBgmBtn();
 
   // APK에서 뒤로 가기 버튼 → 팝업 닫기 / 처음 화면 (앱이 꺼지지 않도록)
   window.quizBack = () => {

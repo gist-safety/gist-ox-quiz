@@ -20,4 +20,8 @@ window.QUIZ_CONFIG = {
 
   // 정답/오답 효과음
   SOUND: true,
+
+  // 배경음악 사용 여부와 음량(0~1). 처음 화면의 ♪ 버튼으로 켜고 끌 수도 있음
+  BGM: true,
+  BGM_VOLUME: 0.35,
 };
