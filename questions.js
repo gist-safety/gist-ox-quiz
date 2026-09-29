@@ -130,6 +130,84 @@ window.QUIZ = {
     "question": "During a fire evacuation, check whether a closed door is hot before opening it.",
     "explanation": "Do not open a door suddenly; first check whether it is hot. Close fire doors behind you after passing through."
    }
+  },
+  {
+   "answer": "O",
+   "ko": {
+    "category": "비상대응/응급조치",
+    "question": "연구실 사고로 화학물질이 피부나 눈에 묻었을 경우, 즉시 흐르는 물에 최소 15분 이상 세척해야 한다.",
+    "explanation": "화학물질 접촉 시 흐르는 물로 최소 15분(산성 20~30분, 알칼리성 1시간 이상) 연속 세척이 기본 원칙입니다."
+   },
+   "en": {
+    "category": "Emergency Response & First Aid",
+    "question": "If a chemical gets on your skin or in your eyes in a lab accident, immediately rinse with running water for at least 15 minutes.",
+    "explanation": "The basic rule for chemical contact is to rinse continuously with running water for at least 15 minutes (20–30 minutes for acids, 1 hour or more for alkalis)."
+   }
+  },
+  {
+   "answer": "O",
+   "ko": {
+    "category": "일반안전수칙",
+    "question": "연구실 내에서는 음식물 섭취 및 음료수 보관이 전면 금지된다.",
+    "explanation": "연구실 내 시약 및 유해물질 오염 방지를 위해 음식물, 음료의 보관 및 섭취는 엄격히 금지됩니다."
+   },
+   "en": {
+    "category": "General Safety Rules",
+    "question": "Eating food and storing drinks are completely prohibited in the lab.",
+    "explanation": "To prevent contamination by reagents and hazardous substances, storing or consuming food and drinks in the lab is strictly prohibited."
+   }
+  },
+  {
+   "answer": "O",
+   "ko": {
+    "category": "화학물질관리",
+    "question": "모든 화학물질 용기(시약병 등)에는 물질명과 GHS 경고표지를 부착해야 한다.",
+    "explanation": "소분용기를 포함하여 화학물질을 담은 용기에는 명칭, 그림문자, 신호어 등이 포함된 경고표지를 부착해야 합니다."
+   },
+   "en": {
+    "category": "Chemical Management",
+    "question": "Every chemical container (reagent bottles, etc.) must be labeled with the substance name and a GHS warning label.",
+    "explanation": "Every container holding a chemical, including small secondary containers, must carry a warning label with the name, pictograms, signal word, etc."
+   }
+  },
+  {
+   "answer": "O",
+   "ko": {
+    "category": "안전점검",
+    "question": "연구실 일상점검은 연구활동 시작 전 매일 1회(저위험 연구실은 매주 1회) 실시해야 한다.",
+    "explanation": "연구활동종사자는 안전관리시스템 등을 통해 매일 일상점검을 수행해야 합니다."
+   },
+   "en": {
+    "category": "Safety Inspection",
+    "question": "Daily lab inspections must be carried out once a day before research activities begin (once a week for low-risk labs).",
+    "explanation": "Research workers must carry out the daily inspection every day, for example through the safety management system."
+   }
+  },
+  {
+   "answer": "O",
+   "ko": {
+    "category": "화학물질관리",
+    "question": "화학물질 용기를 운반할 때는 손으로 직접 들지 않고 운반용 트레이나 수레를 이용해야 한다.",
+    "explanation": "낙하 파손 사고를 예방하기 위해 전용 트레이, 바스켓 또는 바퀴가 달린 운반 카트를 사용해야 합니다."
+   },
+   "en": {
+    "category": "Chemical Management",
+    "question": "When moving chemical containers, do not carry them by hand; use a carrying tray or cart.",
+    "explanation": "To prevent breakage from drops, use a dedicated tray, basket, or wheeled transport cart."
+   }
+  },
+  {
+   "answer": "X",
+   "ko": {
+    "category": "배터리안전",
+    "question": "연구용 배터리는 직사광선이 잘 드는 창가 선반에 보관하는 것이 좋다.",
+    "explanation": "직사광선 및 고온 노출은 배터리 열화 및 열폭주를 유발하므로 직사광선을 피하고 서늘한 실온에 보관해야 합니다."
+   },
+   "en": {
+    "category": "Battery Safety",
+    "question": "Research batteries are best stored on a sunny windowsill shelf.",
+    "explanation": "Direct sunlight and high temperatures cause battery degradation and thermal runaway, so store batteries at a cool room temperature away from direct sunlight."
+   }
   }
  ],
  "hard": [
@@ -150,13 +228,13 @@ window.QUIZ = {
    "answer": "O",
    "ko": {
     "category": "연구실안전법·제도",
-    "question": "일상점검은 전 연구실을 대상으로 매일 1회, 육안으로 실시한다.",
-    "explanation": "일상점검은 전 연구실에서 매일 1회 기계·기구·전기·약품 등의 보관상태와 보호장비 관리실태를 육안으로 점검합니다."
+    "question": "일상점검은 연구실을 대상으로 매일 1회(저위험 연구실은 매주 1회), 육안으로 실시한다.",
+    "explanation": "일상점검은 연구실에서 매일 1회(저위험연구실은 매주 1회) 기계·기구·전기·약품 등의 보관상태와 보호장비 관리실태를 육안으로 점검합니다."
    },
    "en": {
     "category": "Lab Safety Act & Regulations",
-    "question": "Daily inspections are carried out visually once a day in every laboratory.",
-    "explanation": "Daily inspections check, visually and once a day in every lab, the storage condition of machinery, equipment, electrical items and chemicals, and how protective equipment is managed."
+    "question": "Daily inspections are carried out visually once a day in each lab (once a week for low-risk labs).",
+    "explanation": "Daily inspections visually check, once a day in each lab (once a week for low-risk labs), the storage of machinery, equipment, electrical items and chemicals, and how protective equipment is managed."
    }
   },
   {
@@ -225,19 +303,6 @@ window.QUIZ = {
    }
   },
   {
-   "answer": "O",
-   "ko": {
-    "category": "소방 안전",
-    "question": "실험실 안전사고 유형 중 가장 높은 비율(35% 이상)을 차지하는 것은 화재이다.",
-    "explanation": "화재가 35% 이상으로 가장 많으며, 주요 원인은 기기 과열과 화학약품, 누전 등 전기화재입니다."
-   },
-   "en": {
-    "category": "Fire Safety",
-    "question": "Fire accounts for the largest share (over 35%) of laboratory accidents.",
-    "explanation": "Fire is the most common type at over 35%, mainly caused by overheated equipment, chemicals, and electrical fires such as short circuits."
-   }
-  },
-  {
    "answer": "X",
    "ko": {
     "category": "소방 안전",
@@ -261,6 +326,58 @@ window.QUIZ = {
     "category": "First Aid",
     "question": "Bystanders not trained in CPR are advised to perform 'hands-only CPR' — chest compressions without rescue breaths.",
     "explanation": "For bystanders unfamiliar with CPR, hands-only CPR (chest compressions without rescue breathing) is recommended."
+   }
+  },
+  {
+   "answer": "O",
+   "ko": {
+    "category": "안전교육",
+    "question": "신규로 입학한 대학생 및 대학원생의 법정 신규 안전교육 시간은 2시간 이상이다.",
+    "explanation": "신규 입학 학생(대학생, 대학원생)은 연구참여 후 3개월 이내 2시간 이상의 신규교육을 이수해야 합니다."
+   },
+   "en": {
+    "category": "Safety Training",
+    "question": "The mandatory initial safety training for newly enrolled undergraduate and graduate students is at least 2 hours.",
+    "explanation": "Newly enrolled undergraduate and graduate students must complete at least 2 hours of initial safety training within 3 months of joining research."
+   }
+  },
+  {
+   "answer": "X",
+   "ko": {
+    "category": "폐액/폐기물",
+    "question": "실험 폐액은 폐액 전용용기(HDPE)에 용량의 100%까지 가득 채워서 보관해야 한다.",
+    "explanation": "폐액 내 내압 상승 및 열팽창으로 인한 파열을 막기 위해 80% 이하(폐산은 70% 이하)로 수집해야 합니다."
+   },
+   "en": {
+    "category": "Waste Liquid & Waste",
+    "question": "Laboratory waste liquid should be stored in a dedicated waste container (HDPE) filled to 100% of its capacity.",
+    "explanation": "To prevent rupture from pressure build-up and thermal expansion, fill containers to no more than 80% (70% for waste acids)."
+   }
+  },
+  {
+   "answer": "O",
+   "ko": {
+    "category": "가스안전",
+    "question": "조연성 가스(산소 등)와 가연성 가스(수소 등)는 최소 6m 이상 이격하여 보관해야 한다.",
+    "explanation": "상호 반응 위험이 높은 조연성 가스와 가연성 가스는 최소 6m 이상 이격 보관해야 합니다."
+   },
+   "en": {
+    "category": "Gas Safety",
+    "question": "Oxidizing gases (e.g., oxygen) and flammable gases (e.g., hydrogen) must be stored at least 6 m apart.",
+    "explanation": "Because they react dangerously with each other, oxidizing and flammable gases must be stored at least 6 m apart."
+   }
+  },
+  {
+   "answer": "X",
+   "ko": {
+    "category": "폐액/폐기물",
+    "question": "폐액통 내부에서 갑자기 이상 열이나 증기가 발생하면 즉시 뚜껑을 밀폐하고 자리를 비운다.",
+    "explanation": "뚜껑을 밀폐하면 용기 내 압력 증가로 폭발할 수 있으므로, 즉시 주변에 전파하고 연구실책임자 및 안전팀에 신고해야 합니다."
+   },
+   "en": {
+    "category": "Waste Liquid & Waste",
+    "question": "If a waste liquid container suddenly starts giving off unusual heat or vapor, seal the lid tightly right away and leave.",
+    "explanation": "Sealing the lid can build up pressure inside the container and cause an explosion. Immediately alert people nearby and report to the lab supervisor and the safety team."
    }
   }
  ]

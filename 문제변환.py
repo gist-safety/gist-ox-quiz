@@ -1,13 +1,14 @@
 # 엑셀 → questions.js 변환
-#  - 문제: ..\연구실안전_OX퀴즈_100문항.xlsx 의 'Sheet1' (번호 칸에 쉬움/어려움)
-#  - 영문: ..\OX퀴즈_영문번역.xlsx (한글 문제 문장으로 연결)
+#  - 문제: ..\퀴즈 엑셀 파일\OX문제 선별.xlsx 의 'Sheet1' (번호 칸에 쉬움/어려움)
+#  - 영문: ..\퀴즈 엑셀 파일\OX퀴즈_영문번역.xlsx (한글 문제 문장으로 연결)
 # 사용법: 문제변환.bat 실행
 import json, os
 import openpyxl
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-KO_XLSX = os.path.join(HERE, '..', '연구실안전_OX퀴즈_100문항.xlsx')
-EN_XLSX = os.path.join(HERE, '..', 'OX퀴즈_영문번역.xlsx')
+XLSX_DIR = os.path.join(HERE, '..', '퀴즈 엑셀 파일')
+KO_XLSX = os.path.join(XLSX_DIR, 'OX문제 선별.xlsx')
+EN_XLSX = os.path.join(XLSX_DIR, 'OX퀴즈_영문번역.xlsx')
 
 def s(v):
     return str(v or '').strip()
