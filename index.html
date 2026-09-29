@@ -201,18 +201,16 @@
 
   /* ---------- 처음 화면: 상품 안내 ---------- */
   .prize-panel {
-    position: absolute; left: 150px; right: 150px; top: 385px; height: 300px;
-    background: rgba(255,255,255,.72); border: 7px solid var(--panel-border); border-radius: 50px;
+    position: absolute; left: 150px; right: 150px; top: 380px; height: 310px;
+    background: rgba(255,255,255,.9); border: 7px solid var(--panel-border); border-radius: 50px;
     box-shadow: 0 10px 20px rgba(0,60,70,.15);
-    display: flex; flex-direction: column; align-items: center; padding: 14px 30px 0;
+    display: flex; align-items: center; padding: 0 20px;
   }
-  .prize-panel .head { font-size: 42px; color: #2c8f96; }
-  .prize-panel .head b { color: var(--orange); font-weight: normal; }
-  .prize-row { display: flex; justify-content: space-around; width: 100%; margin-top: 8px; }
-  .prize-item { width: 400px; display: flex; flex-direction: column; align-items: center; }
-  .prize-item img { width: 200px; height: 140px; object-fit: cover; border-radius: 22px; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,.18); background: #fff; }
-  .prize-item .rk { font-size: 30px; color: var(--orange); margin-top: 4px; }
-  .prize-item .nm { font-size: 34px; color: #222; white-space: nowrap; line-height: 1.15; }
+  .prize-row { display: flex; justify-content: space-around; width: 100%; }
+  .prize-item { width: 420px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .prize-item img { width: 230px; height: 160px; object-fit: cover; border-radius: 24px; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,.2); background: #fff; }
+  .prize-item .rk { font-size: 34px; line-height: 1.2; color: #d9600a; }
+  .prize-item .nm { font-size: 40px; line-height: 1.2; color: #1b1b1b; white-space: nowrap; }
 
   /* ---------- 결과 ---------- */
   .r-gift { position: absolute; left: 0; right: 0; top: 70px; text-align: center; font-size: 110px; line-height: 1; }
@@ -296,7 +294,6 @@
     <div class="title" style="top:100px">연구실 <span class="hl">안전</span> 퀴즈</div>
     <div class="subtitle" style="top:262px; font-size:88px">Quiz For Lab <span class="hl">Safety</span></div>
     <div class="prize-panel">
-      <div class="head">🎁 문제 풀고! <b>상품</b> 받자!</div>
       <div class="prize-row" id="home-prizes"></div>
     </div>
     <div class="pill lang" data-lang="ko" style="left:270px; top:720px; height:140px; width:500px; letter-spacing:18px;">
