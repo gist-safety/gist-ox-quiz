@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>연구실 안전 OX 퀴즈</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#7ec3c9">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="안전 OX퀴즈">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --top-a: #7ec3c9; --top-b: #6fb6b9;
+    --bot-a: #b1ebef; --bot-b: #aae4e7;
+    --frame: #b7b3b3;
+    --shadow: #4f8c92;
+    --yellow: #ffff00;
+    --orange: #ff8a00;
+    --cyan: #3ee3e8;
+    --blue: #1f7be0;
+    --red: #e8403a;
+    --panel: #e2fbfc;
+    --panel-border: #fdfda6;
+    --ink: #1b1b1b;
+    --font: 'Jua', 'Malgun Gothic', '맑은 고딕', sans-serif;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden;
+    background: linear-gradient(var(--top-a) 50%, var(--bot-a) 50%);
+    font-family: var(--font); color: var(--ink);
+    user-select: none; -webkit-user-select: none; touch-action: manipulation;
+  }
+  #stage {
+    position: absolute; left: 50%; top: 50%;
+    width: 1600px; height: 1200px; overflow: hidden;
+    transform-origin: center center;
+  }
+  #bg { position: absolute; inset: 0; }
+  .deco-lab { position: absolute; left: 0; bottom: 0; width: 860px; pointer-events: none; transition: opacity .3s; }
+  .deco-gist { position: absolute; right: 90px; bottom: 60px; width: 420px; pointer-events: none; transition: opacity .3s; }
+  #stage.quiz-mode .deco-lab, #stage.quiz-mode .deco-gist { opacity: 0; }
+  .gist-small { position: absolute; right: 96px; top: 96px; width: 190px; display: none; }
+  #stage.quiz-mode .gist-small { display: block; }
+
+  .screen { position: absolute; inset: 0; display: none; }
+  .screen.active { display: block; animation: fadeIn .35s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ---------- 제목 ---------- */
+  .title {
+    position: absolute; left: 0; right: 0; text-align: center;
+    font-size: 150px; line-height: 1; color: #fff; letter-spacing: 6px;
+    text-shadow: 7px 7px 0 var(--shadow), 0 0 2px rgba(0,0,0,.15);
+  }
+  .title .hl { color: var(--yellow); }
+  .subtitle {
+    position: absolute; left: 0; right: 0; text-align: center;
+    font-size: 104px; line-height: 1; color: #fff;
+    text-shadow: 6px 6px 0 var(--shadow);
+  }
+  .subtitle .hl { color: var(--yellow); display: inline-block; transform: translateY(18px); }
+
+  /* ---------- 노란 알약 버튼 ---------- */
+  .pill {
+    position: absolute; height: 150px; border-radius: 75px;
+    border: 5px solid var(--cyan);
+    background:
+      radial-gradient(ellipse 30% 22% at 16% 22%, rgba(255,255,255,.95), rgba(255,255,255,0) 70%),
+      linear-gradient(115deg, #fffde0 0%, #fff79a 35%, #ffe81a 100%);
+    box-shadow: 0 0 0 3px rgba(255,255,255,.6) inset, 0 10px 18px rgba(0,60,70,.25);
+    color: var(--orange); font-family: var(--font); font-size: 84px; letter-spacing: 30px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    cursor: pointer; transition: transform .08s;
+  }
+  .pill::after {
+    content: ''; position: absolute; right: 26px; bottom: 22px; width: 22px; height: 14px;
+    border-radius: 50%; background: rgba(255,255,255,.9); transform: rotate(-35deg);
+  }
+  .pill:active, .pressed { transform: scale(.96); }
+  .pill .atom { width: 96px; height: 96px; flex: none; margin-right: 6px; }
+  .pill.small { height: 120px; font-size: 60px; letter-spacing: 2px; border-radius: 60px; }
+  .pill.small .atom { width: 76px; height: 76px; }
+
+  /* ---------- 홈 / SCORE 아이콘 ---------- */
+  .home-btn {
+    position: absolute; left: 70px; top: 70px; width: 130px; height: 130px; border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #ffffc8, #ffff5a 55%, #f6f000);
+    box-shadow: 0 0 0 4px rgba(62,227,232,.7), 0 6px 12px rgba(0,0,0,.2);
+    display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 5;
+  }
+  .home-btn:active { transform: scale(.94); }
+  .score-btn { position: absolute; right: 90px; top: 78px; width: 100px; cursor: pointer; z-index: 5; }
+
+  /* ---------- 학번 입력 ---------- */
+  .id-label { position: absolute; left: 330px; top: 318px; font-size: 76px; color: #111; }
+  .id-box {
+    position: absolute; left: 690px; top: 300px; width: 560px; height: 115px; border-radius: 16px;
+    background: #a5bec2; box-shadow: 7px 7px 0 #3f5566;
+    font-size: 72px; display: flex; align-items: center; justify-content: center; letter-spacing: 4px; color: #222;
+  }
+  .keypad { position: absolute; left: 0; right: 0; top: 480px; display: flex; justify-content: center; gap: 18px; }
+  .key {
+    width: 104px; height: 112px; border-radius: 50%; position: relative; cursor: pointer;
+    background: radial-gradient(circle at 50% 35%, #6db6ff, #2a7fe0 60%, #1b5fb8);
+    box-shadow: 0 10px 0 #9aa4ab, 0 12px 6px rgba(0,0,0,.25), inset 0 -6px 0 rgba(0,0,0,.18);
+    color: #fff; font-size: 70px; display: flex; align-items: center; justify-content: center;
+    text-shadow: 0 0 4px #0b3c7a, 3px 3px 0 #0b3c7a;
+  }
+  .key:active { transform: translateY(6px); box-shadow: 0 4px 0 #9aa4ab, inset 0 -6px 0 rgba(0,0,0,.18); }
+  .key.back { background: radial-gradient(circle at 50% 35%, #e3f7d5, #a9dc8e 65%, #7fbd63); text-shadow: none; }
+
+  /* ---------- 퀴즈 ---------- */
+  .progress {
+    position: absolute; left: 0; right: 0; top: 96px; display: flex; flex-direction: column; align-items: center; gap: 18px;
+  }
+  .progress .count { font-size: 64px; color: #fff; text-shadow: 5px 5px 0 var(--shadow); }
+  .progress .count b { color: var(--yellow); font-weight: normal; }
+  .dots { display: flex; gap: 14px; }
+  .dots i { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,.55); border: 3px solid #fff; }
+  .dots i.on { background: var(--yellow); }
+  .dots i.ok { background: var(--blue); }
+  .dots i.ng { background: var(--red); }
+
+  .card {
+    position: absolute; left: 130px; right: 130px; top: 290px; height: 400px;
+    background: var(--panel); border: 9px solid var(--panel-border); border-radius: 70px;
+    box-shadow: 0 12px 24px rgba(0,60,70,.18);
+    display: flex; align-items: center; justify-content: center; padding: 30px 80px;
+  }
+  .card .cat {
+    position: absolute; top: -34px; left: 50%; transform: translateX(-50%);
+    background: #fff; border: 5px solid var(--cyan); border-radius: 40px; padding: 4px 34px;
+    font-size: 38px; color: #2c8f96; white-space: nowrap;
+  }
+  .card .lv { display: inline-block; color: #fff; border-radius: 24px; padding: 0 18px; margin-right: 14px; font-size: 34px; }
+  .card .lv.easy { background: #34b36b; }
+  .card .lv.hard { background: var(--red); }
+  .lang-en .id-label { left: 250px; }
+  .lang-en .pill { letter-spacing: 3px; }
+  .card .q { font-size: 58px; line-height: 1.38; text-align: center; word-break: keep-all; }
+
+  .ox { position: absolute; left: 0; right: 0; top: 750px; display: flex; justify-content: center; gap: 170px; }
+  .ox-btn {
+    width: 360px; height: 360px; border-radius: 50%; cursor: pointer; position: relative;
+    background: radial-gradient(circle at 40% 30%, #ffffff, #eefcfd 55%, #cdeff2);
+    border: 8px solid var(--cyan);
+    box-shadow: 0 14px 0 #8fbfc4, 0 18px 22px rgba(0,60,70,.25);
+    display: flex; align-items: center; justify-content: center; transition: transform .08s, box-shadow .08s;
+  }
+  .ox-btn:active { transform: translateY(10px); box-shadow: 0 4px 0 #8fbfc4, 0 6px 10px rgba(0,60,70,.25); }
+  .ox-btn svg { width: 240px; height: 240px; }
+  .ox-btn.chosen { border-color: var(--yellow); box-shadow: 0 0 0 12px rgba(255,255,0,.6), 0 14px 0 #8fbfc4; }
+  .ox-btn.dim { opacity: .45; }
+
+  /* ---------- 팝업 ---------- */
+  .overlay {
+    position: absolute; inset: 0; background: rgba(10,60,70,.35); display: none; z-index: 20;
+    align-items: center; justify-content: center;
+  }
+  .overlay.show { display: flex; animation: fadeIn .2s ease; }
+  .popup {
+    width: 1340px; background: var(--panel); border: 10px solid var(--panel-border); border-radius: 80px;
+    padding: 60px 80px 56px; display: flex; flex-direction: column; align-items: center; gap: 30px;
+    box-shadow: 0 20px 40px rgba(0,40,50,.3); animation: pop .28s cubic-bezier(.2,1.4,.4,1);
+  }
+  @keyframes pop { from { transform: scale(.85); } to { transform: scale(1); } }
+  .popup .msg { font-size: 72px; display: flex; align-items: center; gap: 18px; }
+  .popup .msg .bang { color: var(--orange); }
+  .verdict { display: flex; align-items: center; gap: 30px; font-size: 110px; line-height: 1; }
+  .verdict svg { width: 130px; height: 130px; }
+  .verdict.ok { color: var(--blue); }
+  .verdict.ng { color: var(--red); }
+  .answer-chip { font-size: 50px; background: #fff; border-radius: 40px; padding: 8px 40px; border: 5px solid var(--cyan); }
+  .answer-chip b { font-weight: normal; }
+  .explain {
+    width: 100%; background: #fff; border-radius: 40px; padding: 34px 46px; position: relative;
+    font-size: 44px; line-height: 1.5; word-break: keep-all; border: 4px dashed #9fdde1;
+  }
+  .explain .tag {
+    display: inline-block; background: var(--orange); color: #fff; border-radius: 30px;
+    padding: 2px 26px; font-size: 38px; margin-bottom: 12px;
+  }
+  .popup .pill { position: relative; width: 520px; }
+
+  /* ---------- 결과 ---------- */
+  .result-card {
+    position: absolute; left: 230px; right: 230px; top: 300px; height: 470px;
+    background: var(--panel); border: 9px solid var(--panel-border); border-radius: 70px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+    box-shadow: 0 12px 24px rgba(0,60,70,.18);
+  }
+  .score-big { font-size: 190px; line-height: 1; color: var(--orange); text-shadow: 6px 6px 0 #ffe36b; }
+  .score-sub { font-size: 58px; }
+  .score-msg { font-size: 46px; color: #2c8f96; }
+  .result-btns { position: absolute; left: 0; right: 0; top: 830px; display: flex; justify-content: center; gap: 60px; }
+  .result-btns .pill { position: relative; width: 520px; }
+  .countdown { position: absolute; left: 0; right: 0; top: 990px; text-align: center; font-size: 34px; color: #3a7f86; }
+
+  .review-list { width: 100%; max-height: 700px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; padding-right: 10px; }
+  .review-item { background: #fff; border-radius: 34px; padding: 26px 36px; font-size: 38px; line-height: 1.45; word-break: keep-all; }
+  .review-item .rq { margin-bottom: 10px; }
+  .review-item .ra { color: var(--red); margin-bottom: 8px; }
+  .review-item .re { color: #3d5d61; font-size: 34px; }
+
+  /* ---------- 기록 ---------- */
+  .records { width: 100%; max-height: 640px; overflow-y: auto; }
+  .records table { width: 100%; border-collapse: collapse; font-size: 40px; }
+  .records th { position: sticky; top: 0; background: #2c8f96; color: #fff; padding: 12px; font-weight: normal; }
+  .records td { background: #fff; padding: 12px; text-align: center; border-bottom: 3px solid var(--panel); }
+  .rec-summary { font-size: 42px; color: #2c8f96; }
+  .rec-btns { display: flex; gap: 30px; }
+  .rec-btns .pill { position: relative; width: 360px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <svg id="bg" viewBox="0 0 1600 1200" preserveAspectRatio="none" aria-hidden="true">
+    <rect x="0" y="0" width="1600" height="600" fill="#7ec3c9"/>
+    <polygon points="905,0 1600,0 1600,600 305,600" fill="#6fb6b9"/>
+    <rect x="0" y="600" width="1600" height="600" fill="#b1ebef"/>
+    <polygon points="305,600 1600,600 1600,1200 -295,1200" fill="#aae4e7"/>
+    <path id="frame" fill="none" stroke="#b7b3b3" stroke-width="9" stroke-linecap="round"/>
+  </svg>
+  <img class="deco-lab" src="assets/lab.png" alt="">
+  <img class="deco-gist" src="assets/gist.png" alt="GIST 연구실 안전관리">
+  <img class="gist-small" src="assets/gist.png" alt="">
+
+  <!-- 1. 처음 화면 -->
+  <section class="screen active" id="scr-home">
+    <svg class="score-btn" id="btn-records" viewBox="0 0 100 80" aria-label="SCORE 기록">
+      <rect x="2" y="2" width="96" height="76" fill="#fff" stroke="#1d2b44" stroke-width="3"/>
+      <text x="50" y="17" text-anchor="middle" font-size="12" font-family="Arial" font-weight="bold" fill="#1d2b44">SCORE</text>
+      <rect x="6" y="24" width="88" height="50" fill="#6fb2ff" stroke="#1d2b44" stroke-width="3"/>
+      <g stroke="#1d2b44" stroke-width="2.5">
+        <line x1="6" y1="41" x2="94" y2="41"/><line x1="6" y1="57" x2="94" y2="57"/>
+        <line x1="24" y1="24" x2="24" y2="74"/><line x1="42" y1="24" x2="42" y2="74"/>
+        <line x1="60" y1="24" x2="60" y2="74"/><line x1="78" y1="24" x2="78" y2="74"/>
+      </g>
+    </svg>
+    <div class="title" style="top:160px">연구실 <span class="hl">안전</span> 퀴즈</div>
+    <div class="subtitle" style="top:340px">Quiz For Lab <span class="hl">Safety</span></div>
+    <div class="pill lang" data-lang="ko" style="left:270px; top:600px; width:500px; letter-spacing:18px;">
+      <svg class="atom"><use href="#atom"/></svg><span>한 국 어</span>
+    </div>
+    <div class="pill lang" data-lang="en" style="left:830px; top:600px; width:500px; letter-spacing:2px;">
+      <svg class="atom"><use href="#atom"/></svg><span>English</span>
+    </div>
+  </section>
+
+  <!-- 2. 학(사)번 입력 -->
+  <section class="screen" id="scr-id">
+    <div class="home-btn" data-home><svg width="84" height="84"><use href="#house"/></svg></div>
+    <div class="title" style="top:130px" data-i18n="title"></div>
+    <div class="id-label" data-i18n="idLabel"></div>
+    <div class="id-box" id="id-box"></div>
+    <div class="keypad" id="keypad"></div>
+    <div class="pill" id="btn-id-ok" style="left:560px; top:660px; width:480px;">
+      <svg class="atom"><use href="#atom"/></svg><span data-i18n="start"></span>
+    </div>
+  </section>
+
+  <!-- 3. 문제 -->
+  <section class="screen" id="scr-quiz">
+    <div class="home-btn" data-home><svg width="84" height="84"><use href="#house"/></svg></div>
+    <div class="progress">
+      <div class="count" id="q-count"></div>
+      <div class="dots" id="q-dots"></div>
+    </div>
+    <div class="card">
+      <div class="cat" id="q-cat"></div>
+      <div class="q" id="q-text"></div>
+    </div>
+    <div class="ox">
+      <div class="ox-btn" data-ans="O" aria-label="O"><svg><use href="#mark-o"/></svg></div>
+      <div class="ox-btn" data-ans="X" aria-label="X"><svg><use href="#mark-x"/></svg></div>
+    </div>
+  </section>
+
+  <!-- 4. 결과 -->
+  <section class="screen" id="scr-result">
+    <div class="home-btn" data-home><svg width="84" height="84"><use href="#house"/></svg></div>
+    <div class="title" style="top:120px; font-size:130px" data-i18n="resultTitle"></div>
+    <div class="result-card">
+      <div class="score-big" id="r-score"></div>
+      <div class="score-sub" id="r-sub"></div>
+      <div class="score-msg" id="r-msg"></div>
+    </div>
+    <div class="result-btns">
+      <div class="pill small" id="btn-review"><svg class="atom"><use href="#atom"/></svg><span data-i18n="review"></span></div>
+      <div class="pill small" data-home><svg class="atom"><use href="#atom"/></svg><span data-i18n="home"></span></div>
+    </div>
+    <div class="countdown" id="r-countdown"></div>
+  </section>
+
+  <!-- 팝업: 학번 오류 -->
+  <div class="overlay" id="ov-id">
+    <div class="popup">
+      <div class="msg"><span class="bang">!</span><span id="id-err-text"></span></div>
+      <div class="pill small" id="btn-id-retry"><svg class="atom"><use href="#atom"/></svg><span data-i18n="retry"></span></div>
+    </div>
+  </div>
+
+  <!-- 팝업: 정답/오답 + 해설 -->
+  <div class="overlay" id="ov-answer">
+    <div class="popup">
+      <div class="verdict" id="a-verdict"></div>
+      <div class="answer-chip" id="a-chip"></div>
+      <div class="explain"><div class="tag" data-i18n="explain"></div><div id="a-explain"></div></div>
+      <div class="pill small" id="btn-next"><svg class="atom"><use href="#atom"/></svg><span id="btn-next-label">다음 문제</span></div>
+    </div>
+  </div>
+
+  <!-- 팝업: 틀린 문제 다시 보기 -->
+  <div class="overlay" id="ov-review">
+    <div class="popup">
+      <div class="msg" data-i18n="reviewTitle"></div>
+      <div class="review-list" id="review-list"></div>
+      <div class="pill small" data-close><svg class="atom"><use href="#atom"/></svg><span data-i18n="close"></span></div>
+    </div>
+  </div>
+
+  <!-- 팝업: 기록 (SCORE) -->
+  <div class="overlay" id="ov-records">
+    <div class="popup">
+      <div class="msg">SCORE 기록</div>
+      <div class="rec-summary" id="rec-summary"></div>
+      <div class="records"><table><thead><tr><th>일시</th><th>학(사)번</th><th>점수</th><th>정답</th></tr></thead><tbody id="rec-body"></tbody></table></div>
+      <div class="rec-btns">
+        <div class="pill small" id="btn-csv"><span>CSV 저장</span></div>
+        <div class="pill small" id="btn-clear"><span>기록 지우기</span></div>
+        <div class="pill small" data-close><span>닫기</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 공용 아이콘 -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="atom" viewBox="0 0 100 100">
+      <g fill="none" stroke="#3ecfe0" stroke-width="3">
+        <ellipse cx="50" cy="50" rx="44" ry="16"/>
+        <ellipse cx="50" cy="50" rx="44" ry="16" transform="rotate(60 50 50)"/>
+        <ellipse cx="50" cy="50" rx="44" ry="16" transform="rotate(-60 50 50)"/>
+      </g>
+      <g fill="#bff3f7" stroke="#3ecfe0" stroke-width="2.5">
+        <circle cx="44" cy="46" r="7"/><circle cx="56" cy="46" r="7"/><circle cx="50" cy="56" r="7"/>
+        <circle cx="94" cy="50" r="4"/><circle cx="28" cy="88" r="4"/><circle cx="28" cy="12" r="4"/>
+      </g>
+    </symbol>
+    <symbol id="house" viewBox="0 0 100 100">
+      <g fill="none" stroke="#e8201a" stroke-width="11" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M10 48 L50 12 L90 48"/>
+        <rect x="27" y="52" width="46" height="36"/>
+      </g>
+    </symbol>
+    <symbol id="mark-o" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="36" fill="none" stroke="#1f7be0" stroke-width="15"/>
+    </symbol>
+    <symbol id="mark-x" viewBox="0 0 100 100">
+      <g stroke="#e8403a" stroke-width="16" stroke-linecap="round"><line x1="18" y1="18" x2="82" y2="82"/><line x1="82" y1="18" x2="18" y2="82"/></g>
+    </symbol>
+  </defs>
+</svg>
+
+<script src="config.js"></script>
+<script src="questions.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
