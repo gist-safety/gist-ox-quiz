@@ -8,7 +8,7 @@ window.QUIZ_CONFIG = {
 
   // 맞힌 개수별 상품 (사진은 assets 폴더). 조사(을/를)까지 함께 적어 주세요.
   PRIZES: {
-    3: { medal: '🥇', rank: '1등', ko: '지니어스 키링', koObj: '지니어스 키링을', en: 'GIST Genius Keyring', img: 'assets/prize1.jpg' },
+    3: { medal: '🥇', rank: '1등', ko: '지니어스 인형', koObj: '지니어스 인형을', en: 'GIST Genius Plush Doll', img: 'assets/prize1.jpg' },
     2: { medal: '🥈', rank: '2등', ko: '충전식 자전거 후미등', koObj: '충전식 자전거 후미등을', en: 'Rechargeable Bike Tail Light', img: 'assets/prize2.jpg' },
     1: { medal: '🥉', rank: '3등', ko: '기념 볼펜', koObj: '기념 볼펜을', en: 'Souvenir Pen', img: 'assets/prize3.jpg' },
   },
